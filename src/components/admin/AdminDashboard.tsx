@@ -193,7 +193,7 @@ export default function AdminDashboard({
     captionValue: string;
     accept: string;
     inputRef: React.RefObject<HTMLInputElement | null>;
-    previewType?: 'image' | 'video' | 'audio';
+    previewType?: 'image' | 'video' | 'audio' | 'auto';
   }) => {
     const uploadState = uploadStates[fieldName] || { isUploading: false, progress: 0, error: null };
 
@@ -209,27 +209,26 @@ export default function AdminDashboard({
         {/* Preview */}
         {urlValue && (
           <div className="relative mb-3 rounded-xl overflow-hidden border border-pink-500/30 bg-black/40">
-            {previewType === 'image' && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={urlValue}
-                alt={label}
-                className="w-full h-32 object-cover"
-              />
-            )}
-            {previewType === 'video' && (
+            {(previewType === 'video' || (previewType === 'auto' && (/\.(mp4|webm|mov|ogg)($|\?)/i.test(urlValue) || urlValue.includes('video')))) ? (
               <video
                 src={urlValue}
-                className="w-full h-32 object-cover"
+                className="w-full h-36 object-cover"
+                controls
                 muted
                 playsInline
               />
-            )}
-            {previewType === 'audio' && (
+            ) : previewType === 'audio' ? (
               <div className="flex items-center justify-center h-16 bg-pink-950/50">
                 <Music className="w-6 h-6 text-pink-300" />
                 <span className="ml-2 text-xs text-pink-200">Audio loaded</span>
               </div>
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={urlValue}
+                alt={label}
+                className="w-full h-36 object-cover"
+              />
             )}
           </div>
         )}
@@ -509,18 +508,18 @@ export default function AdminDashboard({
                 previewType="video"
               />
 
-              {/* Gift Photo */}
+              {/* Gift Photo / Video */}
               <MediaUploadField
-                label="Secret Gift Framed Picture"
+                label="Secret Gift 4:3 Video / Picture"
                 icon={Gift}
                 fieldName="giftPhoto"
                 configKey="giftPhotoUrl"
                 captionKey="giftPhotoCaption"
                 urlValue={formConfig.giftPhotoUrl}
                 captionValue={formConfig.giftPhotoCaption}
-                accept="image/*"
+                accept="video/mp4,video/webm,video/quicktime,image/*"
                 inputRef={giftPhotoInputRef}
-                previewType="image"
+                previewType="auto"
               />
 
               {/* Background Audio */}

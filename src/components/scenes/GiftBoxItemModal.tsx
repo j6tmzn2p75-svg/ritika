@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, X, Sparkles, Heart } from 'lucide-react';
+import { Gift, X, Sparkles, Heart, Film } from 'lucide-react';
 import { soundManager } from '@/lib/audioEngine';
 
 interface GiftBoxItemModalProps {
@@ -19,6 +19,12 @@ export default function GiftBoxItemModal({
   const [isOpen, setIsOpen] = useState(false);
   const [isOpeningAnim, setIsOpeningAnim] = useState(false);
 
+  const isVideo =
+    giftPhotoUrl &&
+    (/\.(mp4|webm|mov|ogg)($|\?)/i.test(giftPhotoUrl) ||
+      giftPhotoUrl.includes('/uploads/cinemaVideo') ||
+      giftPhotoUrl.includes('video'));
+
   const handleOpen = () => {
     if (isFullscreen) return;
     soundManager.playGiftOpening();
@@ -29,21 +35,36 @@ export default function GiftBoxItemModal({
     }, 400);
   };
 
-  // Fullscreen mode: render gift photo directly
+  // Fullscreen mode: render gift media directly
   if (isFullscreen) {
     return (
-      <div className="relative max-w-md w-full mx-auto p-6 sm:p-7 rounded-3xl border-2 border-amber-300/60 shadow-[0_0_50px_rgba(255,209,102,0.4)]" style={{ background: 'linear-gradient(135deg, rgba(35,14,4,0.85), rgba(20,5,2,0.95))' }}>
+      <div
+        className="relative max-w-lg w-full mx-auto p-5 sm:p-7 rounded-3xl border-2 border-amber-300/60 shadow-[0_0_50px_rgba(255,209,102,0.4)]"
+        style={{ background: 'linear-gradient(135deg, rgba(35,14,4,0.85), rgba(20,5,2,0.95))' }}
+      >
         {/* Gold Filigree Frame */}
         <div className="relative p-2 rounded-2xl bg-gradient-to-tr from-amber-600 via-yellow-200 to-amber-500 shadow-xl">
-          <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-slate-900 border-2 border-amber-900">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={giftPhotoUrl}
-              alt="Gift for Ritika"
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none" />
+          {/* 4:3 Aspect Ratio Frame */}
+          <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-black border-2 border-amber-900 flex items-center justify-center">
+            {isVideo ? (
+              <video
+                src={giftPhotoUrl}
+                controls
+                autoPlay
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={giftPhotoUrl}
+                alt="Gift for Ritika"
+                className="w-full h-full object-cover"
+                loading="eager"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
           </div>
         </div>
 
@@ -119,24 +140,36 @@ export default function GiftBoxItemModal({
               exit={{ scale: 0.85, opacity: 0 }}
               transition={{ type: 'spring', damping: 18 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-sm sm:max-w-md w-full glass-panel-gold p-6 sm:p-7 rounded-3xl border-2 border-amber-300/60 shadow-[0_0_50px_rgba(255,209,102,0.4)]"
+              className="relative max-w-md sm:max-w-lg w-full glass-panel-gold p-5 sm:p-7 rounded-3xl border-2 border-amber-300/60 shadow-[0_0_50px_rgba(255,209,102,0.4)]"
             >
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center hover:bg-pink-700 shadow-lg cursor-pointer transition-transform hover:scale-105"
+                className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center hover:bg-pink-700 shadow-lg cursor-pointer transition-transform hover:scale-105 z-30"
               >
                 <X className="w-4 h-4" />
               </button>
 
               <div className="relative p-2 rounded-2xl bg-gradient-to-tr from-amber-600 via-yellow-200 to-amber-500 shadow-xl">
-                <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-slate-900 border-2 border-amber-900">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={giftPhotoUrl}
-                    alt="Gift for Ritika"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none" />
+                {/* 4:3 Aspect Ratio Frame */}
+                <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-black border-2 border-amber-900 flex items-center justify-center">
+                  {isVideo ? (
+                    <video
+                      src={giftPhotoUrl}
+                      controls
+                      autoPlay
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={giftPhotoUrl}
+                      alt="Gift for Ritika"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
                 </div>
               </div>
 
